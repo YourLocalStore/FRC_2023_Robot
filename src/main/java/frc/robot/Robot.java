@@ -13,11 +13,12 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
  * 
  */
 
-
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import frc.robot.commands.drive.DriveArcade;
+
+import frc.robot.commands.elevator.MoveElevatorCommand;
 
 import frc.robot.subsystems.DriveSystem;
 import frc.robot.subsystems.ElevatorSystem;
@@ -46,16 +47,6 @@ public class Robot extends TimedRobot {
   private DriveSystem drive = new DriveSystem();
 
   private SendableChooser chooser = new SendableChooser<String>(); 
-
-  private static final XboxController DRIVE_CONTROLLER = new XboxController(0); 
-  private static final XboxController OP_CONTROLLER = new XboxController(1); 
-
-  public static XboxController D_CONTROL() {
-      return DRIVE_CONTROLLER;
-  }
-  public static XboxController O_CONTROL() {
-      return OP_CONTROLLER;
-  }
 
   private double[] 
     speeds = {0, 0};
@@ -92,7 +83,12 @@ public class Robot extends TimedRobot {
 @Override
   public void teleopPeriodic() {
 
-    CommandScheduler.getInstance().schedule(new DriveArcade(drive));
+    if(constants.D_CONTROL.getYButtonPressed()){
+      CommandScheduler.getInstance().schedule(new MoveElevatorCommand(elevator, true));
+    }
+    else if(constants.D_CONTROL.getAButtonPressed()){
+      CommandScheduler.getInstance().schedule(new MoveElevatorCommand(elevator, false));
+    }
     //switch((String)chooser.getSelected()){
 //
     //  speed = DRIVE_CONTROLLER.getRightTriggerAxis() - DRIVE_CONTROLLER.getLeftTriggerAxis();

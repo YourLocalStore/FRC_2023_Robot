@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController;
+
 public class constants {
     public static final int ELEVATOR_MOTOR_CAN_ID_R = 0;
     public static final int ELEVATOR_MOTOR_CAN_ID_L = 1;
@@ -13,4 +15,7 @@ public class constants {
 
     public static final int[] ELEVATOR_ENCODER_PORTS = {8, 9};
     public static final int[] DRIVE_ENCODER_PORTS = {10, 11};
+
+    public static final XboxController D_CONTROL = new XboxController(0); 
+    public static final XboxController O_CONTROL = new XboxController(1); 
 }

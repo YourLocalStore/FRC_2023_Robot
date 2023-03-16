@@ -2,7 +2,7 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSystem;
-import frc.robot.Robot;
+import frc.robot.constants;
 
 public class defaultMoveCommand extends CommandBase{
 
@@ -20,7 +20,7 @@ public class defaultMoveCommand extends CommandBase{
     
     @Override
     public void execute() {
-        m_drive.OperateArcade(Robot.D_CONTROL().getLeftY(), Robot.D_CONTROL().getRightX());
+        m_drive.OperateArcade(constants.D_CONTROL.getLeftY(), constants.D_CONTROL.getRightX());
         
     }
 
