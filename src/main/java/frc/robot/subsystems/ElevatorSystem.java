@@ -1,31 +1,53 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Encoder;
+
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.constants;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 
 public class ElevatorSystem extends SubsystemBase {
 
-    private final WPI_VictorSPX m_motor;
-    private final DigitalInput toplimitSwitch, bottomlimitSwitch, middlelimitswitch;
+    private final WPI_VictorSPX l_motor, r_motor;
+    private final DigitalInput toplimitSwitch, bottomlimitSwitch;
+    private final Encoder encoder;
+
+    private final MotorControllerGroup m_motor;
+
+
+    private int last_position = 0;
 
     private double speed = 0.5;
 
     private int setting = 0;
 
     public ElevatorSystem(){
-        m_motor = new WPI_VictorSPX(6);
-        m_motor.setInverted(true);
+        r_motor = new WPI_VictorSPX(6);
+        l_motor = new WPI_VictorSPX(6);
+        m_motor = new MotorControllerGroup(l_motor, r_motor);
+
+        //r_motor.setInverted(true);
         toplimitSwitch = new DigitalInput(0);
         bottomlimitSwitch = new DigitalInput(1);
-        middlelimitswitch = new DigitalInput(2);
+
+        encoder = new Encoder(
+            constants.ELEVATOR_ENCODER_PORTS[0],
+            constants.ELEVATOR_ENCODER_PORTS[1]
+            );
+            
+    }
+
+    void PositionCheck(){
+        if(bottomlimitSwitch.get())
+            last_position = 0;
+        else if(toplimitSwitch.get())
+            last_position = 2;
+        else if(encoder.getDistance() > 0.45 && encoder.getDistance() < 0.55)
+            last_position = 1;
     }
 
     public void SwitchSetting(boolean direction){
@@ -47,28 +69,42 @@ public class ElevatorSystem extends SubsystemBase {
             }
         }
 
+
+
         switch (setting){
+
+            //Mesurment = 26
             case 0:
 
-                while(!bottomlimitSwitch.get()) { m_motor.set(-speed); }
+                while(!bottomlimitSwitch.get()) { m_motor.set(-speed); PositionCheck();}
+                last_position = 0;
+                m_motor.set(0);
                 break;
 
             case 1:
         
-                while(!middlelimitswitch.get()) { m_motor.set(speed); }
+                while(encoder.getDistance() < 0.45 && encoder.getDistance() > 0.55) { 
+                    if(last_position == 2){
+                        m_motor.set(-speed); 
+                    }
+                    else{
+                        m_motor.set(speed); 
+                    }
+
+                    PositionCheck();
+                }
+
+                last_position = 1;
+                m_motor.set(0);
                 break;
 
             case 2:
         
-                while(!toplimitSwitch.get()) { m_motor.set(speed); }
+                while(!toplimitSwitch.get()) { m_motor.set(speed); PositionCheck();}
+
+                last_position = 0;
+                m_motor.set(0);
                 break;
-        }
-
-
-        if(direction && !toplimitSwitch.get()){
-            while(!toplimitSwitch.get()){
-                m_motor.set(speed);
-            }
         }
     }
 }

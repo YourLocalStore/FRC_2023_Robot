@@ -1,15 +1,14 @@
 package frc.robot.commands.drive;
 
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSystem;
 import frc.robot.Robot;
 
-public class DriveArcade extends CommandBase{
+public class defaultMoveCommand extends CommandBase{
 
     private DriveSystem m_drive;
 
-    public DriveArcade(DriveSystem drive){
+    public defaultMoveCommand(DriveSystem drive){
         super();
         m_drive = drive;
         addRequirements(drive);

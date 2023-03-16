@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,7 +35,6 @@ public class DriveSystem extends SubsystemBase {
         m_rightDrive.setInverted(true);
     }
 
-    private double time = 0, range = 0.5;
 
     public void OperateArcade(double input_x, double input_y){
         m_robotDrive.arcadeDrive(input_x, input_y);
