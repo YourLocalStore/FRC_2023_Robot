@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants;
+import frc.robot.commands.elevator.defaultElevatorCommand;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -41,6 +42,11 @@ public class ElevatorSystem extends SubsystemBase {
             
     }
 
+    public void initDefaultCommand() {
+        // Set the default command for a subsystem here.
+        setDefaultCommand(new defaultElevatorCommand(this));
+    }
+
     void PositionCheck(){
         if(bottomlimitSwitch.get())
             last_position = 0;
@@ -50,61 +56,64 @@ public class ElevatorSystem extends SubsystemBase {
             last_position = 1;
     }
 
-    public void SwitchSetting(boolean direction){
-        
-        if(direction){
-            if(setting == 2){
-                setting = 0;
-            }
-            else{
-                setting++;
-            }
-        }
-        else{
-            if(setting == 0){
-                setting = 2;
-            }
-            else{
-                setting--;
-            }
-        }
+    public int GetPosition(){
+        PositionCheck();
+        return last_position;
+    }
 
+    public boolean SwitchSetting(int setting){
 
+        PositionCheck();
 
         switch (setting){
 
             //Mesurment = 26
             case 0:
 
-                while(!bottomlimitSwitch.get()) { m_motor.set(-speed); PositionCheck();}
-                last_position = 0;
-                m_motor.set(0);
+                if(!bottomlimitSwitch.get()) { m_motor.set(-speed);}
+
+                else{
+                    last_position = 0;
+                    m_motor.set(0);
+                    return true;
+                }
+
                 break;
 
             case 1:
-        
-                while(encoder.getDistance() < 0.45 && encoder.getDistance() > 0.55) { 
+
+                if(encoder.getDistance() < 0.45 && encoder.getDistance() > 0.55) { 
                     if(last_position == 2){
                         m_motor.set(-speed); 
                     }
                     else{
-                        m_motor.set(speed); 
+                        m_motor.set(speed);
                     }
 
-                    PositionCheck();
+
                 }
 
-                last_position = 1;
-                m_motor.set(0);
+                else{
+                    last_position = 1;
+                    m_motor.set(0);
+                    return true;
+                }
+
                 break;
 
             case 2:
         
-                while(!toplimitSwitch.get()) { m_motor.set(speed); PositionCheck();}
+                if(!toplimitSwitch.get()) { m_motor.set(speed);}
 
-                last_position = 0;
-                m_motor.set(0);
+                else{ 
+                    last_position = 2;
+                    m_motor.set(0);
+                    return true;
+                }
+
                 break;
         }
+
+        return false;
     }
 }
